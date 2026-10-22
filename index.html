@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="kk" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <title>Нұр</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+  <!-- Telegram Mini Apps SDK (ресми). Жүктелмесе, қолданба браузер режимінде жұмыс істейді. -->
+  <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
+</head>
+<body>
+  <div id="app">
+    <div id="offlineBar" class="offline-bar" hidden>Интернет жоқ — соңғы сақталған деректер көрсетілуде</div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <header class="topbar">
+      <button id="locBtn" class="pill loc-pill" aria-label="Орынды өзгерту">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7.5"/></svg>
+        <span class="loc-text"><small id="locSub">Қазақстан</small><b id="locName">—</b></span>
+        <svg class="ico chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <button id="settingsBtn" class="pill round" aria-label="Баптаулар">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <!-- БАСТЫ -->
+      <section id="screen-home" class="screen">
+        <div class="daystrip" id="dayStrip"></div>
+        <div class="hero card" id="heroCard"></div>
+        <div class="stats" id="statsRow"></div>
+        <div class="card sun-card" id="sunCard"></div>
+        <div class="card next-card" id="nextCard"></div>
+        <div class="card" id="homeTimes"></div>
+      </section>
+
+      <!-- НАМАЗ -->
+      <section id="screen-prayer" class="screen" hidden>
+        <h2 class="h">Намаз уақыттары</h2>
+        <div class="card" id="prayerSettings"></div>
+        <div class="card">
+          <div class="date-nav">
+            <button class="icon-btn" id="dPrev" aria-label="Алдыңғы күн">‹</button>
+            <label class="date-pick"><span id="prayerDateLabel"></span><input type="date" id="prayerDate" aria-label="Күнді таңдау"></label>
+            <button class="icon-btn" id="dNext" aria-label="Келесі күн">›</button>
+          </div>
+          <div id="prayerDay"></div>
+          <p class="muted small" id="prayerNote"></p>
+        </div>
+        <div class="card">
+          <h3 class="h3">Алдағы күндердің кестесі</h3>
+          <div class="table-wrap"><table class="sched" id="schedTable"></table></div>
+        </div>
+      </section>
+
+      <!-- ҚҰРАН -->
+      <section id="screen-quran" class="screen" hidden>
+        <div id="quranList">
+          <h2 class="h">Құран</h2>
+          <div class="search"><input id="quranSearch" type="search" placeholder="Сүре атауы, нөмірі немесе аят мәтіні" autocomplete="off"><button id="bmBtn" class="chip">★ Бетбелгілер</button></div>
+          <div id="lastRead"></div>
+          <div id="surahList" class="surah-list"></div>
+        </div>
+        <div id="quranReader" hidden></div>
+      </section>
+
+      <!-- ҚҰБЫЛА -->
+      <section id="screen-qibla" class="screen" hidden>
+        <h2 class="h">Құбыла</h2>
+        <div class="card compass-card">
+          <div class="compass" id="compass">
+            <svg viewBox="-110 -110 220 220" id="compassSvg" aria-label="Құбыла компасы">
+              <g id="dial">
+                <circle r="100" class="dial-bg"/><circle r="100" class="dial-ring"/>
+                <g id="ticks"></g>
+                <text y="-78" class="dial-n">С</text><text x="78" y="6" class="dial-l">Ш</text><text y="88" class="dial-l">О</text><text x="-78" y="6" class="dial-l">Б</text>
+                <g id="qiblaMark"><line y1="-20" y2="-96" class="q-line"/><path d="M0 -104 L9 -84 L-9 -84 Z" class="q-arrow"/><text y="-66" class="q-kaaba">🕋</text></g>
+              </g>
+              <path d="M0 -118 L7 -108 L-7 -108 Z" class="top-marker"/>
+              <circle r="4" class="center-dot"/>
+            </svg>
+          </div>
+          <div class="qibla-info">
+            <div><small>Құбыла бұрышы</small><b id="qAngle">—</b></div>
+            <div><small>Құрылғы бағыты</small><b id="qHeading">—</b></div>
+            <div><small>Қағбаға дейін</small><b id="qDist">—</b></div>
+          </div>
+          <div id="qStatus" class="q-status"></div>
+          <div class="row-btns"><button id="qEnable" class="btn primary">Сенсорды қосу</button><button id="qLoc" class="btn">Орналасқан жерді жаңарту</button></div>
+        </div>
+        <div class="card" id="qManual"></div>
+        <div class="card"><h3 class="h3">Калибрлеу</h3>
+          <p class="muted">Телефонды ауада «8» санын сызғандай бірнеше рет бұраңыз. Металл заттардан, магниттен және қуаттау құрылғысынан алыс ұстаңыз. Телефонды жер бетіне параллель ұстаңыз.</p></div>
+      </section>
+
+      <!-- ЗІКІР -->
+      <section id="screen-dhikr" class="screen" hidden>
+        <h2 class="h">Зікір және тасбих</h2>
+        <div class="chips" id="dhikrChips"></div>
+        <div class="card dhikr-card" id="dhikrCard"></div>
+        <div class="card" id="dhikrStats"></div>
+      </section>
+
+      <!-- БАПТАУЛАР -->
+      <section id="screen-settings" class="screen" hidden>
+        <h2 class="h">Баптаулар</h2>
+        <div id="settingsBody"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" id="nav" aria-label="Негізгі навигация">
+      <button data-go="home" aria-label="Басты"><svg class="ico" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Басты</span></button>
+      <button data-go="prayer" aria-label="Намаз"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Намаз</span></button>
+      <button data-go="quran" class="center" aria-label="Құран"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M9 8h6"/></svg><span>Құран</span></button>
+      <button data-go="qibla" aria-label="Құбыла"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><span>Құбыла</span></button>
+      <button data-go="dhikr" aria-label="Зікір"><svg class="ico" viewBox="0 0 24 24"><circle cx="6" cy="8" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="19" cy="15" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="5" cy="15" r="2"/></svg><span>Зікір</span></button>
+    </nav>
+    <div id="dimLayer" class="dim-layer"></div>
+    <div id="sheet" class="sheet" hidden></div>
+  </div>
+
+  <script src="js/config.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/prayer.js" defer></script>
+  <script src="js/app.js" defer></script>
+  <script src="js/quran.js" defer></script>
+  <script src="js/qibla.js" defer></script>
+  <script src="js/dhikr.js" defer></script>
+</body>
+</html>
